@@ -1,0 +1,81 @@
+- hosts: all
+  tasks:
+  - yum_repository:
+      baseurl: "https://download.docker.com/linux/centos/7/x86_64/stable/"
+      name: "docker"
+      description: "mydocker"
+      gpgcheck: no
+      state: present
+
+  - yum_repository:
+      baseurl: "file:///run/media/root/RHEL-8-0-0-BaseOS-x86_64/AppStream"
+      name: "mydvd1"
+      description: "mydvd1 repository"
+      gpgcheck: no
+      state: present 
+
+  - yum_repository:
+      baseurl: "file:///run/media/root/RHEL-8-0-0-BaseOS-x86_64/BaseOS"
+      name: "mydvd2"
+      description: "mydvd2 repository"
+      gpgcheck: no
+      state: present
+
+  - package:
+      name: "docker-ce-18.09.1"
+      state: latest
+
+  - service:
+      name: "docker"
+      state: started
+
+  - pip:
+      name: "docker"
+      state: present
+
+  - pip:
+      name: "urllib3"
+      state: absent
+
+  - pip:
+      name: "urllib3"
+      state: present
+
+  - docker_image:
+      name: "httpd:latest"
+
+  - docker_container:
+      image: httpd:latest
+      name: "harsh"
+      state: present 
+      ports: "8081:80"
+      volumes: /var/www/html:/usr/local/apache2/htdocs/
+
+  - copy:
+      src: "harsh2.html"
+      dest: "/var/www/html/"
+      
+
+  - docker_container:
+      name: "harsh"
+      state: started
+
+  - firewalld:
+      port: "80/tcp"
+      state: enabled
+      permanent: yes
+      immediate: yes
+
+  - ansible.posix.firewalld:
+      masquerade: yes
+      zone: public
+      state: enabled
+      permanent: yes
+      immediate: yes
+   
+  
+ 
+  
+  
+  
+          
